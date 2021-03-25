@@ -68,9 +68,7 @@ public class DefaultGrailsJobClass extends AbstractGrailsClass implements Grails
     }
 
     public String getGroup() {
-        String group = getStaticPropertyValue(GROUP, String.class);
-        if (group == null || "".equals(group)) return DEFAULT_GROUP;
-        return group;
+        return DEFAULT_GROUP;
     }
 
     public boolean isConcurrent() {

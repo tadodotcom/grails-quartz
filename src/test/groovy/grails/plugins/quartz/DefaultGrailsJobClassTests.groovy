@@ -72,14 +72,4 @@ class DefaultGrailsJobClassTests extends GroovyTestCase {
 		assertFalse "Job class shouldn't be marked as concurrent", grailsJobClass.concurrent
 	}
 
-	void testGroupParameter() {
-		Class jobClass = gcl.parseClass("""
-                class TestJob {
-                    static group = 'myGroup'
-                    def execute() {}
-                }
-                """.stripIndent())
-		GrailsJobClass grailsJobClass = new DefaultGrailsJobClass(jobClass)
-		assertEquals 'myGroup', grailsJobClass.group
-	}
 }
