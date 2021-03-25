@@ -21,13 +21,13 @@ import groovy.transform.CompileStatic
 @CompileStatic
 class QuartzJobTraitInjector implements TraitInjector {
 
-    @Override
-    Class getTrait() {
-        QuartzJob
-    }
+	@Override
+	Class getTrait() {
+		QuartzJob
+	}
 
-    @Override
-    String[] getArtefactTypes() {
-        [DefaultGrailsJobClass.JOB] as String[]
-    }
+	@Override
+	String[] getArtefactTypes() {
+		[DefaultGrailsJobClass.JOB] as String[]
+	}
 }

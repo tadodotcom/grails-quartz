@@ -29,23 +29,23 @@ import org.quartz.Trigger
  */
 @CompileStatic
 class TriggerDescriptor {
-    JobDescriptor jobDescriptor
+	JobDescriptor jobDescriptor
 
-    Trigger trigger
+	Trigger trigger
 
-    Trigger.TriggerState state
+	Trigger.TriggerState state
 
-    static build(JobDescriptor jobDescriptor, Trigger trigger, Scheduler scheduler) {
-        def result = new TriggerDescriptor(jobDescriptor: jobDescriptor, trigger: trigger)
-        result.state = scheduler.getTriggerState(trigger.key)
-        return result
-    }
+	static build(JobDescriptor jobDescriptor, Trigger trigger, Scheduler scheduler) {
+		def result = new TriggerDescriptor(jobDescriptor: jobDescriptor, trigger: trigger)
+		result.state = scheduler.getTriggerState(trigger.key)
+		return result
+	}
 
-    String getName() {
-        trigger.key.name
-    }
+	String getName() {
+		trigger.key.name
+	}
 
-    String getGroup() {
-        trigger.key.group
-    }
+	String getGroup() {
+		trigger.key.group
+	}
 }

@@ -8,6 +8,6 @@ import org.quartz.JobExecutionException
  * @author Vitalii Samolovskikh aka Kefir
  */
 class TestQuartzJob implements Job {
-    @Override
-    void execute(JobExecutionContext context) throws JobExecutionException {}
+	@Override
+	void execute(JobExecutionContext context) throws JobExecutionException {}
 }

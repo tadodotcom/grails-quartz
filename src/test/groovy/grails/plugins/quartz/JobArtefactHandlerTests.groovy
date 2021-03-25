@@ -25,26 +25,26 @@ import grails.core.ArtefactHandler
  * @since 0.2
  */
 class JobArtefactHandlerTests extends GroovyTestCase {
-    private ArtefactHandler handler = new JobArtefactHandler()
-    protected GroovyClassLoader gcl = new GroovyClassLoader()
+	private ArtefactHandler handler = new JobArtefactHandler()
+	protected GroovyClassLoader gcl = new GroovyClassLoader()
 
-    void testJobClassWithExecuteMethod() {
-        Class c = gcl.parseClass("class TestJob { def execute() { }}\n")
-        assertTrue "Class *Job which defines execute() method should be recognized as a Job class", handler.isArtefact(c)
-    }
+	void testJobClassWithExecuteMethod() {
+		Class c = gcl.parseClass("class TestJob { def execute() { }}\n")
+		assertTrue "Class *Job which defines execute() method should be recognized as a Job class", handler.isArtefact(c)
+	}
 
-    void testJobClassWithExecuteMethodWithParam() {
-        Class c = gcl.parseClass("class TestJob { def execute(param) { }}\n")
-        assertTrue "Class *Job which defines execute(param) method should be recognized as a Job class", handler.isArtefact(c)
-    }
+	void testJobClassWithExecuteMethodWithParam() {
+		Class c = gcl.parseClass("class TestJob { def execute(param) { }}\n")
+		assertTrue "Class *Job which defines execute(param) method should be recognized as a Job class", handler.isArtefact(c)
+	}
 
-    void testJobClassWithWrongName() {
-        Class c = gcl.parseClass("class TestController { def execute() { }}\n")
-        assertFalse "Class which name doesn't end with 'Job' shouldn't be recognized as a Job class", handler.isArtefact(c)
-    }
+	void testJobClassWithWrongName() {
+		Class c = gcl.parseClass("class TestController { def execute() { }}\n")
+		assertFalse "Class which name doesn't end with 'Job' shouldn't be recognized as a Job class", handler.isArtefact(c)
+	}
 
-    void testJobClassWithoutExecuteMethod() {
-        Class c = gcl.parseClass("class TestJob { def execute1() { }}\n")
-        assertFalse "Class which doesn't declare 'execute' method shouldn't be recognized as a Job class", handler.isArtefact(c)
-    }
+	void testJobClassWithoutExecuteMethod() {
+		Class c = gcl.parseClass("class TestJob { def execute1() { }}\n")
+		assertFalse "Class which doesn't declare 'execute' method shouldn't be recognized as a Job class", handler.isArtefact(c)
+	}
 }

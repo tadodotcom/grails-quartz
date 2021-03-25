@@ -30,68 +30,68 @@ import org.springframework.util.Assert
 
 @CompileStatic
 trait QuartzJob implements GrailsApplicationAware {
-    private static Scheduler internalScheduler
-    private static GrailsJobClass internalJobArtefact
+	private static Scheduler internalScheduler
+	private static GrailsJobClass internalJobArtefact
 
-    GrailsApplication grailsApplication
+	GrailsApplication grailsApplication
 
-    static triggerNow(Map params = null) {
-        internalScheduler.triggerJob(new JobKey(this.getName(), internalJobArtefact.group), params ? new JobDataMap(params) : null)
-    }
+	static triggerNow(Map params = null) {
+		internalScheduler.triggerJob(new JobKey(this.getName(), internalJobArtefact.group), params ? new JobDataMap(params) : null)
+	}
 
-    @CompileDynamic
-    static schedule(Long repeatInterval, Integer repeatCount = SimpleTrigger.REPEAT_INDEFINITELY, Map params = null) {
-        internalScheduleTrigger(TriggerUtils.buildSimpleTrigger(this.getName(), internalJobArtefact.group, repeatInterval, repeatCount), params)
-    }
+	@CompileDynamic
+	static schedule(Long repeatInterval, Integer repeatCount = SimpleTrigger.REPEAT_INDEFINITELY, Map params = null) {
+		internalScheduleTrigger(TriggerUtils.buildSimpleTrigger(this.getName(), internalJobArtefact.group, repeatInterval, repeatCount), params)
+	}
 
-    @CompileDynamic
-    static schedule(Date scheduleDate, Map params = null) {
-        internalScheduleTrigger(TriggerUtils.buildDateTrigger(this.getName(), internalJobArtefact.group, scheduleDate), params)
-    }
+	@CompileDynamic
+	static schedule(Date scheduleDate, Map params = null) {
+		internalScheduleTrigger(TriggerUtils.buildDateTrigger(this.getName(), internalJobArtefact.group, scheduleDate), params)
+	}
 
-    @CompileDynamic
-    static schedule(String cronExpression, Map params = null) {
-        internalScheduleTrigger(TriggerUtils.buildCronTrigger(this.getName(), internalJobArtefact.group, cronExpression), params)
-    }
+	@CompileDynamic
+	static schedule(String cronExpression, Map params = null) {
+		internalScheduleTrigger(TriggerUtils.buildCronTrigger(this.getName(), internalJobArtefact.group, cronExpression), params)
+	}
 
-    static schedule(Trigger trigger, Map params = null) {
-        def jobKey = new JobKey(this.getName(), internalJobArtefact.group)
-        Assert.isTrue trigger.jobKey == jobKey || (trigger instanceof MutableTrigger),
-                "The trigger job key is not equal to the job key or the trigger is immutable"
+	static schedule(Trigger trigger, Map params = null) {
+		def jobKey = new JobKey(this.getName(), internalJobArtefact.group)
+		Assert.isTrue trigger.jobKey == jobKey || (trigger instanceof MutableTrigger),
+				"The trigger job key is not equal to the job key or the trigger is immutable"
 
-        ((MutableTrigger)trigger).jobKey = jobKey
+		((MutableTrigger) trigger).jobKey = jobKey
 
-        if (params) {
-            trigger.jobDataMap.putAll(params)
-        }
-        internalScheduler.scheduleJob(trigger)
-    }
+		if (params) {
+			trigger.jobDataMap.putAll(params)
+		}
+		internalScheduler.scheduleJob(trigger)
+	}
 
-    static removeJob() {
-        internalScheduler.deleteJob(new JobKey(this.getName(), internalJobArtefact.group))
-    }
+	static removeJob() {
+		internalScheduler.deleteJob(new JobKey(this.getName(), internalJobArtefact.group))
+	}
 
-    static reschedule(Trigger trigger, Map params = null) {
-        if (params) trigger.jobDataMap.putAll(params)
-        internalScheduler.rescheduleJob(trigger.key, trigger)
-    }
+	static reschedule(Trigger trigger, Map params = null) {
+		if (params) trigger.jobDataMap.putAll(params)
+		internalScheduler.rescheduleJob(trigger.key, trigger)
+	}
 
-    static unschedule(String triggerName, String triggerGroup = GrailsJobClassConstants.DEFAULT_TRIGGERS_GROUP) {
-        internalScheduler.unscheduleJob(TriggerKey.triggerKey(triggerName, triggerGroup))
-    }
+	static unschedule(String triggerName, String triggerGroup = GrailsJobClassConstants.DEFAULT_TRIGGERS_GROUP) {
+		internalScheduler.unscheduleJob(TriggerKey.triggerKey(triggerName, triggerGroup))
+	}
 
-    private static internalScheduleTrigger(Trigger trigger, Map params = null) {
-        if (params) {
-            trigger.jobDataMap.putAll(params)
-        }
-        internalScheduler.scheduleJob(trigger)
-    }
+	private static internalScheduleTrigger(Trigger trigger, Map params = null) {
+		if (params) {
+			trigger.jobDataMap.putAll(params)
+		}
+		internalScheduler.scheduleJob(trigger)
+	}
 
-    public static setScheduler(Scheduler scheduler) {
-        internalScheduler = scheduler
-    }
+	public static setScheduler(Scheduler scheduler) {
+		internalScheduler = scheduler
+	}
 
-    public static setGrailsJobClass(GrailsJobClass gjc) {
-        internalJobArtefact = gjc
-    }
+	public static setGrailsJobClass(GrailsJobClass gjc) {
+		internalJobArtefact = gjc
+	}
 }

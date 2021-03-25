@@ -31,23 +31,23 @@ import org.quartz.Trigger
  */
 @CompileStatic
 class JobDescriptor {
-    JobDetail jobDetail
+	JobDetail jobDetail
 
-    List<TriggerDescriptor> triggerDescriptors
+	List<TriggerDescriptor> triggerDescriptors
 
-    static build(JobDetail jobDetail, Scheduler scheduler) {
-        def job = new JobDescriptor(jobDetail: jobDetail)
-        job.triggerDescriptors = (List <TriggerDescriptor>)scheduler.getTriggersOfJob(jobDetail.key).collect { trigger ->
-            TriggerDescriptor.build(job, (Trigger)trigger, scheduler)
-        }
-        return job
-    }
+	static build(JobDetail jobDetail, Scheduler scheduler) {
+		def job = new JobDescriptor(jobDetail: jobDetail)
+		job.triggerDescriptors = (List<TriggerDescriptor>) scheduler.getTriggersOfJob(jobDetail.key).collect { trigger ->
+			TriggerDescriptor.build(job, (Trigger) trigger, scheduler)
+		}
+		return job
+	}
 
-    String getName() {
-        jobDetail.key.name
-    }
+	String getName() {
+		jobDetail.key.name
+	}
 
-    String getGroup() {
-        jobDetail.key.group
-    }
+	String getGroup() {
+		jobDetail.key.group
+	}
 }

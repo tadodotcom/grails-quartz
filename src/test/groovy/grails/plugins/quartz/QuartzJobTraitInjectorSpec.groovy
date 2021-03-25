@@ -5,10 +5,10 @@ import spock.lang.Specification
 
 class QuartzJobTraitInjectorSpec extends Specification {
 
-    void 'test that the job trait is applied'() {
-        expect:
-        QuartzJob.isAssignableFrom TraitTestJob
-    }
+	void 'test that the job trait is applied'() {
+		expect:
+		QuartzJob.isAssignableFrom TraitTestJob
+	}
 }
 
 @Artefact('Job')

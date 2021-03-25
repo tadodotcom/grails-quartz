@@ -37,39 +37,39 @@ import static org.grails.io.support.GrailsResourceUtils.REGEX_FILE_SEPARATOR
  */
 public class JobArtefactHandler extends ArtefactHandlerAdapter {
 
-    static final String TYPE = "Job"
-    public static Pattern JOB_PATH_PATTERN = Pattern.compile(".+" + REGEX_FILE_SEPARATOR + GRAILS_APP_DIR + REGEX_FILE_SEPARATOR + "jobs" + REGEX_FILE_SEPARATOR + "(.+)\\.(groovy)");
+	static final String TYPE = "Job"
+	public static Pattern JOB_PATH_PATTERN = Pattern.compile(".+" + REGEX_FILE_SEPARATOR + GRAILS_APP_DIR + REGEX_FILE_SEPARATOR + "jobs" + REGEX_FILE_SEPARATOR + "(.+)\\.(groovy)");
 
-    public JobArtefactHandler() {
-        super(TYPE, GrailsJobClass.class, DefaultGrailsJobClass.class, TYPE)
-    }
+	public JobArtefactHandler() {
+		super(TYPE, GrailsJobClass.class, DefaultGrailsJobClass.class, TYPE)
+	}
 
-    boolean isArtefact(ClassNode classNode) {
-        if(classNode == null ||
-           !isValidArtefactClassNode(classNode, classNode.getModifiers()) ||
-           !classNode.getName().endsWith(DefaultGrailsJobClass.JOB) ||
-           !classNode.getMethods(GrailsJobClassConstants.EXECUTE)) {
-            return false
-        }
+	boolean isArtefact(ClassNode classNode) {
+		if (classNode == null ||
+				!isValidArtefactClassNode(classNode, classNode.getModifiers()) ||
+				!classNode.getName().endsWith(DefaultGrailsJobClass.JOB) ||
+				!classNode.getMethods(GrailsJobClassConstants.EXECUTE)) {
+			return false
+		}
 
-        URL url = GrailsASTUtils.getSourceUrl(classNode)
+		URL url = GrailsASTUtils.getSourceUrl(classNode)
 
-        url &&  JOB_PATH_PATTERN.matcher(url.getFile()).find()
-    }
+		url && JOB_PATH_PATTERN.matcher(url.getFile()).find()
+	}
 
-    boolean isArtefactClass(Class clazz) {
-        // class shouldn't be null and should ends with Job suffix
-        if (clazz == null || !clazz.getName().endsWith(DefaultGrailsJobClass.JOB)) return false
-        // and should have one of execute() or execute(JobExecutionContext) methods defined
-        Method method = ReflectionUtils.findMethod(clazz, GrailsJobClassConstants.EXECUTE)
-        if (method == null) {
-            // we're using Object as a param here to allow groovy-style 'def execute(param)' method
-            method = ReflectionUtils.findMethod(clazz, GrailsJobClassConstants.EXECUTE, [Object] as Class[])
-        }
-        if (method == null) {
-            // also check for the execution context as a variable because that's what's being passed
-            method = ReflectionUtils.findMethod(clazz, GrailsJobClassConstants.EXECUTE, [JobExecutionContext] as Class[])
-        }
-        method != null
-    }
+	boolean isArtefactClass(Class clazz) {
+		// class shouldn't be null and should ends with Job suffix
+		if (clazz == null || !clazz.getName().endsWith(DefaultGrailsJobClass.JOB)) return false
+		// and should have one of execute() or execute(JobExecutionContext) methods defined
+		Method method = ReflectionUtils.findMethod(clazz, GrailsJobClassConstants.EXECUTE)
+		if (method == null) {
+			// we're using Object as a param here to allow groovy-style 'def execute(param)' method
+			method = ReflectionUtils.findMethod(clazz, GrailsJobClassConstants.EXECUTE, [Object] as Class[])
+		}
+		if (method == null) {
+			// also check for the execution context as a variable because that's what's being passed
+			method = ReflectionUtils.findMethod(clazz, GrailsJobClassConstants.EXECUTE, [JobExecutionContext] as Class[])
+		}
+		method != null
+	}
 }
