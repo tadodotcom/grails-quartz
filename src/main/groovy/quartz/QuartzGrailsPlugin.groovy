@@ -86,13 +86,6 @@ Adds Quartz job scheduling features
 		{ ->
 			Properties properties = loadQuartzProperties()
 
-
-			boolean hasHibernate = hasHibernate(manager)
-			def hasJdbcStore = properties['org.quartz.jdbcStore']?.toBoolean()
-			if (hasJdbcStore == null) {
-				hasJdbcStore = true
-			}
-
 			def pluginEnabled = properties['org.quartz.pluginEnabled']?.toBoolean()
 			if (pluginEnabled == null) {
 				pluginEnabled = true
@@ -100,10 +93,16 @@ Adds Quartz job scheduling features
 
 			if (pluginEnabled) {
 				def purgeTables = properties['org.quartz.purgeQuartzTablesOnStartup']?.toBoolean()
-
 				if (purgeTables == null) {
 					purgeTables = false
 				}
+
+				def hasJdbcStore = properties['org.quartz.jdbcStore']?.toBoolean()
+				if (hasJdbcStore == null) {
+					hasJdbcStore = true
+				}
+
+				boolean hasHibernate = hasHibernate(manager)
 
 				if (hasJdbcStore && hasHibernate && purgeTables) {
 					purgeTablesBean(JdbcCleanup) { bean ->
@@ -310,47 +309,40 @@ Adds Quartz job scheduling features
 	}
 
 	void refreshJobs(ignoreErrors = false) {
-		def pluginEnabled = grailsApplication.config.getProperty('quartz.pluginEnabled')?.toBoolean()
-		if (pluginEnabled == null) {
-			pluginEnabled = true
-		}
-		if (pluginEnabled) {
-			def quartzScheduler = applicationContext.quartzScheduler
+		def quartzScheduler = applicationContext.quartzScheduler
 
-			Set<JobKey> jobKeys = applicationContext.quartzScheduler.getJobKeys(GroupMatcher.anyGroup())
+		Set<JobKey> jobKeys = applicationContext.quartzScheduler.getJobKeys(GroupMatcher.anyGroup())
 
-			//Remove any recently removed / disabled Jobs
-			jobKeys.each { JobKey key ->
-				def match = grailsApplication.jobClasses.find { GrailsJobClass jobClass -> jobClass.isEnabled() && jobClass.group == key.group && jobClass.clazz.name == key.name }
-				if (!match) {
-					log.info("Removing No longer Active Job: ${key.name}")
-					def triggersForJob = quartzScheduler.getTriggersOfJob(key)?.collect { it.key }
-					if (triggersForJob) {
-						//clean up triggers before we remove the job
-						quartzScheduler.unscheduleJobs(triggersForJob)
-					}
-					quartzScheduler.deleteJob(key)
+		//Remove any recently removed / disabled Jobs
+		jobKeys.each { JobKey key ->
+			def match = grailsApplication.jobClasses.find { GrailsJobClass jobClass -> jobClass.isEnabled() && jobClass.group == key.group && jobClass.clazz.name == key.name }
+			if (!match) {
+				log.info("Removing No longer Active Job: ${key.name}")
+				def triggersForJob = quartzScheduler.getTriggersOfJob(key)?.collect { it.key }
+				if (triggersForJob) {
+					//clean up triggers before we remove the job
+					quartzScheduler.unscheduleJobs(triggersForJob)
 				}
-			}
-
-			//Add new jobs
-			grailsApplication.jobClasses.findAll { GrailsJobClass jobClass -> jobClass.isEnabled() }.each { GrailsJobClass jobClass ->
-				try {
-					scheduleJob(jobClass, applicationContext, hasHibernate(manager))
-					def clz = jobClass.clazz
-					clz.scheduler = applicationContext.quartzScheduler
-					clz.grailsJobClass = jobClass
-				} catch (ex) {
-					if (ignoreErrors) {
-						log.error("Error Scheduling Job Class ${jobClass} - ${ex.message}", ex)
-					} else {
-						throw ex
-					}
-				}
-
+				quartzScheduler.deleteJob(key)
 			}
 		}
 
+		//Add new jobs
+		grailsApplication.jobClasses.findAll { GrailsJobClass jobClass -> jobClass.isEnabled() }.each { GrailsJobClass jobClass ->
+			try {
+				scheduleJob(jobClass, applicationContext, hasHibernate(manager))
+				def clz = jobClass.clazz
+				clz.scheduler = applicationContext.quartzScheduler
+				clz.grailsJobClass = jobClass
+			} catch (ex) {
+				if (ignoreErrors) {
+					log.error("Error Scheduling Job Class ${jobClass} - ${ex.message}", ex)
+				} else {
+					throw ex
+				}
+			}
+
+		}
 	}
 
 	void onStartup(Map<String, Object> event) {
