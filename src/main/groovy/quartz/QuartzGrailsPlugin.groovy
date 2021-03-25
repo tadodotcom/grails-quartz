@@ -311,7 +311,7 @@ Adds Quartz job scheduling features
 	void refreshJobs(ignoreErrors = false) {
 		def quartzScheduler = applicationContext.quartzScheduler
 
-		Set<JobKey> jobKeys = applicationContext.quartzScheduler.getJobKeys(GroupMatcher.anyGroup())
+		Set<JobKey> jobKeys = applicationContext.quartzScheduler.getJobKeys(GroupMatcher.jobGroupEquals('GRAILS_JOBS'))
 
 		//Remove any recently removed / disabled Jobs
 		jobKeys.each { JobKey key ->
